@@ -1,0 +1,321 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+    --font-sans:
+        Instrument Sans, ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --radius-lg: var(--radius);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-sm: calc(var(--radius) - 4px);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar-background);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}
+
+@layer utilities {
+    body,
+    html {
+        --font-sans:
+            'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+            'Noto Color Emoji';
+    }
+}
+
+:root {
+    /* Light Mode Color Palette - Professional & Powerful */
+    --background: #F8FAFC;
+    --foreground: #1A202C;
+    --card: #FFFFFF;
+    --card-foreground: #1A202C;
+    --popover: #FFFFFF;
+    --popover-foreground: #1A202C;
+    --primary: #C83FFF;
+    --primary-foreground: #FFFFFF;
+    --secondary: #2D72F8;
+    --secondary-foreground: #FFFFFF;
+    --muted: #F7FAFC;
+    --muted-foreground: #4A5568;
+    --accent: #FF8933;
+    --accent-foreground: #FFFFFF;
+    --status-todo: #A0AEC0;
+    --status-in-progress: #C83FFF;
+    --status-qa: #2D72F8;
+    --status-done: #FF8933;
+    --destructive: #F33362;
+    --destructive-foreground: #FFFFFF;
+    --border: #E2E8F0;
+    --input: #E2E8F0;
+    --ring: #C83FFF;
+    /* Chart colors - Light Mode */
+    --chart-1: #C83FFF;
+    --chart-2: #2D72F8;
+    --chart-3: #FF8933;
+    --chart-4: #1851FF;
+    --chart-5: #9B67FC;
+    --radius: 0.75rem;
+    --sidebar-background: #FFFFFF;
+    --sidebar-foreground: #1A202C;
+    --sidebar-primary: #C83FFF;
+    --sidebar-primary-foreground: #FFFFFF;
+    --sidebar-accent: #F7FAFC;
+    --sidebar-accent-foreground: #4A5568;
+    --sidebar-border: #E2E8F0;
+    --sidebar-ring: #C83FFF;
+    --sidebar: #FFFFFF;
+}
+
+.dark {
+    /* Dark Mode Color Palette - Elegant & Modern */
+    --background: #0F1A2F;
+    --foreground: #E2E8F0;
+    --card: #1A2746;
+    --card-foreground: #E2E8F0;
+    --popover: #1A2746;
+    --popover-foreground: #E2E8F0;
+    --primary: #9B67FC;
+    --primary-foreground: #0F1A2F;
+    --secondary: #1851FF;
+    --secondary-foreground: #0F1A2F;
+    --muted: #1A2746;
+    --muted-foreground: #A0AEC0;
+    --accent: #BD00FF;
+    --accent-foreground: #0F1A2F;
+    --status-todo: #718096;
+    --status-in-progress: #9B67FC;
+    --status-qa: #1851FF;
+    --status-done: #DFB729;
+    --destructive: #F33362;
+    --destructive-foreground: #0F1A2F;
+    --border: #2D3748;
+    --input: #2D3748;
+    --ring: #9B67FC;
+    /* Chart colors - Dark Mode */
+    --chart-1: #9B67FC;
+    --chart-2: #1851FF;
+    --chart-3: #7FAAFF;
+    --chart-4: #BD00FF;
+    --chart-5: #E3C2EF;
+    --sidebar-background: #0F1A2F;
+    --sidebar-foreground: #E2E8F0;
+    --sidebar-primary: #9B67FC;
+    --sidebar-primary-foreground: #0F1A2F;
+    --sidebar-accent: #1A2746;
+    --sidebar-accent-foreground: #A0AEC0;
+    --sidebar-border: #2D3748;
+    --sidebar-ring: #9B67FC;
+    --sidebar: #0F1A2F;
+}
+
+/* Pastel Mode Color Palette */
+.pastel {
+    transition: all 0.3s ease-in-out;
+}
+
+.pastel:not(.dark) {
+    /* Pastel Mode Color Palette - Soft & Aesthetic */
+    --background: #F5F8FA;
+    --foreground: #2D3748;
+    --card: #FFFFFF;
+    --card-foreground: #2D3748;
+    --popover: #FFFFFF;
+    --popover-foreground: #2D3748;
+    --primary: #DFAECA;
+    --primary-foreground: #2D3748;
+    --secondary: #7FAAFF;
+    --secondary-foreground: #2D3748;
+    --muted: #F5F8FA;
+    --muted-foreground: #64748B;
+    --accent: #F2C2CB;
+    --accent-foreground: #2D3748;
+    --destructive: #EE6C83;
+    --destructive-foreground: #FFFFFF;
+    --border: #E5E9ED;
+    --input: #E5E9ED;
+    --ring: #DFAECA;
+    /* Chart colors - Pastel Mode */
+    --chart-1: #DFAECA;
+    --chart-2: #7FAAFF;
+    --chart-3: #F2C2CB;
+    --chart-4: #9B67FC;
+    --chart-5: #E3C2EF;
+    --sidebar-background: #FFFFFF;
+    --sidebar-foreground: #2D3748;
+    --sidebar-primary: #DFAECA;
+    --sidebar-primary-foreground: #2D3748;
+    --sidebar-accent: #F5F8FA;
+    --sidebar-accent-foreground: #64748B;
+    --sidebar-border: #E5E9ED;
+    --sidebar-ring: #DFAECA;
+    --sidebar: #FFFFFF;
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes rotateIn {
+    from {
+        opacity: 0;
+        transform: rotate(-10deg) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(200, 63, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(200, 63, 255, 0.6);
+    }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+    animation: glow 2s ease-in-out infinite;
+}
