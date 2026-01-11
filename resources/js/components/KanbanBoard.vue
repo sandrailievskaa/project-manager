@@ -1,18 +1,37 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { type Task } from '@/types';
-import { CheckCircle2, ClipboardList, ListTodo, Search } from 'lucide-vue-next';
+import { CheckCircle2, ClipboardList, ListTodo, Search, ChevronDown, MessageSquare } from 'lucide-vue-next';
 import { router } from '@inertiajs/vue3';
 import { update as updateTask } from '@/routes/tasks';
+import { store as storeComment } from '@/routes/comments';
 import { useToast } from '@/composables/useToast';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Form } from '@inertiajs/vue3';
+import InputError from '@/components/InputError.vue';
 
 interface Props {
     tasks: Task[];
     canChangeStatus?: (task: Task) => boolean;
+    canComment?: (task: Task) => boolean;
 }
 
 const props = defineProps<Props>();
 const { success, error } = useToast();
+
+const commentModalOpen = ref<number | null>(null);
 
 const draggedTask = ref<Task | null>(null);
 const draggedOverColumn = ref<string | null>(null);
@@ -112,6 +131,38 @@ const getPriorityColor = (task: Task) => {
     if (daysSinceCreated > 3) return 'border-l-4 border-l-yellow-500';
     return 'border-l-4 border-l-green-500';
 };
+
+const updateTaskStatus = (taskId: number, status: string) => {
+    router.patch(
+        updateTask(taskId).url,
+        { status },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                success('Task status updated successfully');
+                router.reload({ preserveScroll: true });
+            },
+            onError: () => {
+                error('Failed to update task status');
+            },
+        },
+    );
+};
+
+const getStatusLabel = (status: string) => {
+    switch (status) {
+        case 'to_do':
+            return 'To Do';
+        case 'in_progress':
+            return 'In Progress';
+        case 'qa':
+            return 'QA';
+        case 'done':
+            return 'Done';
+        default:
+            return status;
+    }
+};
 </script>
 
 <template>
@@ -182,6 +233,47 @@ const getPriorityColor = (task: Task) => {
                             <h4 class="flex-1 text-base font-bold leading-tight text-foreground transition-colors duration-300 group-hover/task:text-primary">
                                 {{ task.title }}
                             </h4>
+                            <div class="flex shrink-0 items-center gap-2">
+                                <div class="relative group/status">
+                                    <select
+                                        v-if="canChangeStatus && canChangeStatus(task)"
+                                        :value="task.status"
+                                        @change="
+                                            updateTaskStatus(
+                                                task.id,
+                                                ($event.target as HTMLSelectElement)
+                                                    .value,
+                                            )
+                                        "
+                                        class="appearance-none h-7 rounded-lg border-2 border-border/50 bg-card/80 backdrop-blur-xl pl-2 pr-6 py-1 text-xs font-bold shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                                        :class="[
+                                            statusColors[task.status as keyof typeof statusColors]?.bg || 'bg-gray-100 dark:bg-gray-800',
+                                            statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300',
+                                        ]"
+                                    >
+                                        <option value="to_do">To Do</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="qa">QA</option>
+                                        <option value="done">Done</option>
+                                    </select>
+                                    <ChevronDown
+                                        v-if="canChangeStatus && canChangeStatus(task)"
+                                        class="absolute right-1.5 top-1/2 -translate-y-1/2 h-3 w-3 pointer-events-none transition-transform duration-200 group-hover/status:translate-y-0.5"
+                                        :class="statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300'"
+                                    />
+                                    <Badge
+                                        v-else
+                                        variant="secondary"
+                                        class="shrink-0 px-2 py-1 text-xs font-bold shadow-lg transition-transform duration-300 hover:scale-105"
+                                        :class="[
+                                            statusColors[task.status as keyof typeof statusColors]?.bg || 'bg-gray-100 dark:bg-gray-800',
+                                            statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300',
+                                        ]"
+                                    >
+                                        {{ getStatusLabel(task.status) }}
+                                    </Badge>
+                                </div>
+                            </div>
                         </div>
                         <p class="line-clamp-2 text-sm leading-relaxed text-muted-foreground transition-colors duration-300 group-hover/task:text-foreground">
                             {{ task.description }}
@@ -196,6 +288,90 @@ const getPriorityColor = (task: Task) => {
                         </div>
                         <div v-else class="flex items-center gap-2 rounded-xl border border-dashed border-border/30 bg-muted/20 px-3 py-2">
                             <span class="text-xs font-medium text-muted-foreground">Unassigned</span>
+                        </div>
+                        <div v-if="props.canComment && props.canComment(task)" class="flex items-center gap-2">
+                            <Dialog
+                                :open="commentModalOpen === task.id"
+                                @update:open="
+                                    (value) =>
+                                        (commentModalOpen = value
+                                            ? task.id
+                                            : null)
+                                "
+                            >
+                                <DialogTrigger as-child>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        class="h-7 flex-1 rounded-lg border-2 border-border/50 bg-card/80 backdrop-blur-xl px-2 py-1 text-xs font-semibold shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                                    >
+                                        <MessageSquare class="mr-1.5 h-3 w-3" />
+                                        <span>Comment</span>
+                                        <span
+                                            v-if="task.comments && task.comments.length > 0"
+                                            class="ml-1.5 rounded-full bg-primary/20 px-1.5 py-0.5 text-xs font-bold"
+                                        >
+                                            {{ task.comments.length }}
+                                        </span>
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Add Comment</DialogTitle>
+                                        <DialogDescription>
+                                            Leave a comment on this task
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <Form
+                                        :action="storeComment().url"
+                                        :method="storeComment().method"
+                                        :options="{ preserveScroll: true }"
+                                        @success="
+                                            () => {
+                                                commentModalOpen = null;
+                                                router.reload({
+                                                    preserveScroll: true,
+                                                });
+                                            }
+                                        "
+                                        v-slot="{ errors, processing }"
+                                        class="space-y-4"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="task_id"
+                                            :value="task.id"
+                                        />
+                                        <div class="grid gap-2">
+                                            <Label for="text">Comment</Label>
+                                            <Input
+                                                id="text"
+                                                name="text"
+                                                required
+                                                placeholder="Enter your comment"
+                                            />
+                                            <InputError
+                                                :message="errors.text"
+                                            />
+                                        </div>
+                                        <DialogFooter>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                @click="commentModalOpen = null"
+                                            >
+                                                Cancel
+                                            </Button>
+                                            <Button
+                                                type="submit"
+                                                :disabled="processing"
+                                            >
+                                                Add Comment
+                                            </Button>
+                                        </DialogFooter>
+                                    </Form>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
                 </div>

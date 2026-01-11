@@ -43,6 +43,7 @@ import {
     Calendar,
     Timer,
     FolderKanban,
+    ChevronDown,
 } from 'lucide-vue-next';
 import { computed, ref, onMounted } from 'vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -735,6 +736,7 @@ const removeUserFromProject = (userId: number) => {
                     v-else-if="viewMode === 'kanban'"
                     :tasks="displayTasks"
                     :can-change-status="canChangeTaskStatus"
+                    :can-comment="canCommentOnTask"
                 />
 
                 <CalendarView
@@ -784,38 +786,45 @@ const removeUserFromProject = (userId: number) => {
                                 </div>
                                 
                                 <div class="flex shrink-0 items-center gap-2">
-                                    <select
-                                        v-if="canChangeTaskStatus(task)"
-                                        :value="task.status"
-                                        @change="
-                                            updateTaskStatus(
-                                                task.id,
-                                                ($event.target as HTMLSelectElement)
-                                                    .value,
-                                            )
-                                        "
-                                        class="h-8 rounded-xl border-2 border-border/50 bg-card/80 backdrop-blur-xl px-3 py-1 text-xs font-bold shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                                        :class="[
-                                            statusColors[task.status as keyof typeof statusColors]?.bg || 'bg-gray-100 dark:bg-gray-800',
-                                            statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300',
-                                        ]"
-                                    >
-                                        <option value="to_do">To Do</option>
-                                        <option value="in_progress">In Progress</option>
-                                        <option value="qa">QA</option>
-                                        <option value="done">Done</option>
-                                    </select>
-                                    <Badge
-                                        v-else
-                                        variant="secondary"
-                                        class="shrink-0 px-3 py-1.5 text-xs font-bold shadow-lg transition-transform duration-300 hover:scale-105"
-                                        :class="[
-                                            statusColors[task.status as keyof typeof statusColors]?.bg || 'bg-gray-100 dark:bg-gray-800',
-                                            statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300',
-                                        ]"
-                                    >
-                                        {{ getStatusLabel(task.status) }}
-                                    </Badge>
+                                    <div class="relative group/status">
+                                        <select
+                                            v-if="canChangeTaskStatus(task)"
+                                            :value="task.status"
+                                            @change="
+                                                updateTaskStatus(
+                                                    task.id,
+                                                    ($event.target as HTMLSelectElement)
+                                                        .value,
+                                                )
+                                            "
+                                            class="appearance-none h-8 rounded-xl border-2 border-border/50 bg-card/80 backdrop-blur-xl pl-3 pr-8 py-1 text-xs font-bold shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                                            :class="[
+                                                statusColors[task.status as keyof typeof statusColors]?.bg || 'bg-gray-100 dark:bg-gray-800',
+                                                statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300',
+                                            ]"
+                                        >
+                                            <option value="to_do">To Do</option>
+                                            <option value="in_progress">In Progress</option>
+                                            <option value="qa">QA</option>
+                                            <option value="done">Done</option>
+                                        </select>
+                                        <ChevronDown
+                                            v-if="canChangeTaskStatus(task)"
+                                            class="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 pointer-events-none transition-transform duration-200 group-hover/status:translate-y-0.5"
+                                            :class="statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300'"
+                                        />
+                                        <Badge
+                                            v-else
+                                            variant="secondary"
+                                            class="shrink-0 px-3 py-1.5 text-xs font-bold shadow-lg transition-transform duration-300 hover:scale-105"
+                                            :class="[
+                                                statusColors[task.status as keyof typeof statusColors]?.bg || 'bg-gray-100 dark:bg-gray-800',
+                                                statusColors[task.status as keyof typeof statusColors]?.text || 'text-gray-700 dark:text-gray-300',
+                                            ]"
+                                        >
+                                            {{ getStatusLabel(task.status) }}
+                                        </Badge>
+                                    </div>
                                     
                                     <Dialog
                                         :open="editTaskModalOpen === task.id"
@@ -1068,6 +1077,93 @@ const removeUserFromProject = (userId: number) => {
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="relative z-10 flex items-center gap-2 mt-2">
+                                <Dialog
+                                    :open="commentModalOpen === task.id"
+                                    @update:open="
+                                        (value) =>
+                                            (commentModalOpen = value
+                                                ? task.id
+                                                : null)
+                                    "
+                                >
+                                    <DialogTrigger as-child>
+                                        <Button
+                                            v-if="canCommentOnTask(task)"
+                                            variant="ghost"
+                                            size="sm"
+                                            class="h-8 flex-1 rounded-xl border-2 border-border/50 bg-card/80 backdrop-blur-xl px-3 py-1.5 text-xs font-semibold shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                                        >
+                                            <MessageSquare class="mr-2 h-3.5 w-3.5" />
+                                            <span>Comment</span>
+                                            <span
+                                                v-if="task.comments && task.comments.length > 0"
+                                                class="ml-2 rounded-full bg-primary/20 px-1.5 py-0.5 text-xs font-bold"
+                                            >
+                                                {{ task.comments.length }}
+                                            </span>
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>Add Comment</DialogTitle>
+                                            <DialogDescription>
+                                                Leave a comment on this task
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <Form
+                                            :action="storeComment().url"
+                                            :method="storeComment().method"
+                                            :options="{ preserveScroll: true }"
+                                            @success="
+                                                () => {
+                                                    commentModalOpen = null;
+                                                    router.reload({
+                                                        preserveScroll: true,
+                                                    });
+                                                }
+                                            "
+                                            v-slot="{ errors, processing }"
+                                            class="space-y-4"
+                                        >
+                                            <input
+                                                type="hidden"
+                                                name="task_id"
+                                                :value="task.id"
+                                            />
+                                            <div class="grid gap-2">
+                                                <Label for="text">Comment</Label>
+                                                <Input
+                                                    id="text"
+                                                    name="text"
+                                                    required
+                                                    placeholder="Enter your comment"
+                                                />
+                                                <InputError
+                                                    :message="errors.text"
+                                                />
+                                            </div>
+                                            <DialogFooter>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    @click="commentModalOpen = null"
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    type="submit"
+                                                    :disabled="processing"
+                                                >
+                                                    Add Comment
+                                                </Button>
+                                            </DialogFooter>
+                                        </Form>
+                                    </DialogContent>
+                                </Dialog>
+                            </div>
+                            
                             <div
                                 v-if="task.comments && task.comments.length > 0"
                                 class="relative z-10 flex flex-col gap-3 rounded-2xl border-2 border-border/50 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5 backdrop-blur-xl p-4 shadow-md"
@@ -1224,87 +1320,6 @@ const removeUserFromProject = (userId: number) => {
                                 </div>
                             </div>
                             
-                            <div
-                                v-if="canCommentOnTask(task)"
-                                class="relative z-10 mt-auto"
-                            >
-                                <Dialog
-                                    :open="commentModalOpen === task.id"
-                                    @update:open="
-                                        (value) =>
-                                            (commentModalOpen = value
-                                                ? task.id
-                                                : null)
-                                    "
-                                >
-                                    <DialogTrigger as-child>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            class="w-full rounded-xl border-2 border-border/50 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 backdrop-blur-xl font-semibold shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-                                        >
-                                            <MessageSquare class="mr-2 h-4 w-4" />
-                                            Add Comment
-                                        </Button>
-                                    </DialogTrigger>
-                                <DialogContent>
-                                    <DialogHeader>
-                                        <DialogTitle>Add Comment</DialogTitle>
-                                        <DialogDescription>
-                                            Leave a comment on this task
-                                        </DialogDescription>
-                                    </DialogHeader>
-                                    <Form
-                                        :action="storeComment().url"
-                                        :method="storeComment().method"
-                                        :options="{ preserveScroll: true }"
-                                        @success="
-                                            () => {
-                                                commentModalOpen = null;
-                                                router.reload({
-                                                    preserveScroll: true,
-                                                });
-                                            }
-                                        "
-                                        v-slot="{ errors, processing }"
-                                        class="space-y-4"
-                                    >
-                                        <input
-                                            type="hidden"
-                                            name="task_id"
-                                            :value="task.id"
-                                        />
-                                        <div class="grid gap-2">
-                                            <Label for="text">Comment</Label>
-                                            <Input
-                                                id="text"
-                                                name="text"
-                                                required
-                                                placeholder="Enter your comment"
-                                            />
-                                            <InputError
-                                                :message="errors.text"
-                                            />
-                                        </div>
-                                        <DialogFooter>
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                @click="commentModalOpen = null"
-                                            >
-                                                Cancel
-                                            </Button>
-                                            <Button
-                                                type="submit"
-                                                :disabled="processing"
-                                            >
-                                                Add Comment
-                                            </Button>
-                                        </DialogFooter>
-                                    </Form>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
                         </div>
                     </div>
                 </div>
