@@ -586,134 +586,134 @@ const removeUserFromProject = (userId: number) => {
             </div>
 
             <div class="flex flex-col gap-4">
-                <div class="flex flex-col gap-4">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-xl font-semibold">Tasks</h2>
-                        <div class="flex items-center gap-2">
-                            <div class="flex items-center gap-1 rounded-lg border-2 border-border/50 bg-card p-1 shadow-md">
-                                <Button
-                                    @click="viewMode = 'kanban'"
-                                    variant="ghost"
-                                    size="sm"
-                                    :class="viewMode === 'kanban' ? 'bg-primary/10 text-primary' : ''"
-                                >
-                                    <Columns3 class="h-4 w-4" />
-                                </Button>
-                                <Button
-                                    @click="viewMode = 'grid'"
-                                    variant="ghost"
-                                    size="sm"
-                                    :class="viewMode === 'grid' ? 'bg-primary/10 text-primary' : ''"
-                                >
-                                    <LayoutGrid class="h-4 w-4" />
-                                </Button>
-                                <Button
-                                    @click="viewMode = 'calendar'"
-                                    variant="ghost"
-                                    size="sm"
-                                    :class="viewMode === 'calendar' ? 'bg-primary/10 text-primary' : ''"
-                                >
-                                    <Calendar class="h-4 w-4" />
-                                </Button>
-                            </div>
-                            <Dialog
-                                v-if="isTeamLead"
-                                v-model:open="createTaskModalOpen"
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold">Tasks</h2>
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-1 rounded-lg border-2 border-border/50 bg-card p-1 shadow-md">
+                            <Button
+                                @click="viewMode = 'kanban'"
+                                variant="ghost"
+                                size="sm"
+                                :class="viewMode === 'kanban' ? 'bg-primary/10 text-primary' : ''"
                             >
-                                <DialogTrigger as-child>
-                                    <Button>
-                                        <Plus class="h-4 w-4" />
-                                        Create Task
-                                    </Button>
-                                </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Create New Task</DialogTitle>
-                                <DialogDescription>
-                                    Add a new task to this project
-                                </DialogDescription>
-                            </DialogHeader>
-                            <Form
-                                :action="storeTask().url"
-                                :method="storeTask().method"
-                                :options="{ preserveScroll: true }"
-                                @success="
-                                    () => {
-                                        createTaskModalOpen = false;
-                                        router.reload({ preserveScroll: true });
-                                    }
-                                "
-                                v-slot="{ errors, processing }"
-                                class="space-y-4"
+                                <Columns3 class="h-4 w-4" />
+                            </Button>
+                            <Button
+                                @click="viewMode = 'grid'"
+                                variant="ghost"
+                                size="sm"
+                                :class="viewMode === 'grid' ? 'bg-primary/10 text-primary' : ''"
                             >
-                                <input
-                                    type="hidden"
-                                    name="project_id"
-                                    :value="project.id"
-                                />
-                                <input
-                                    type="hidden"
-                                    name="status"
-                                    value="to_do"
-                                />
-                                <div class="grid gap-2">
-                                    <Label for="title">Title</Label>
-                                    <Input
-                                        id="title"
-                                        name="title"
-                                        required
-                                        placeholder="Task title"
+                                <LayoutGrid class="h-4 w-4" />
+                            </Button>
+                            <Button
+                                @click="viewMode = 'calendar'"
+                                variant="ghost"
+                                size="sm"
+                                :class="viewMode === 'calendar' ? 'bg-primary/10 text-primary' : ''"
+                            >
+                                <Calendar class="h-4 w-4" />
+                            </Button>
+                        </div>
+                        <Dialog
+                            v-if="isTeamLead"
+                            v-model:open="createTaskModalOpen"
+                        >
+                            <DialogTrigger as-child>
+                                <Button>
+                                    <Plus class="h-4 w-4" />
+                                    Create Task
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Create New Task</DialogTitle>
+                                    <DialogDescription>
+                                        Add a new task to this project
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <Form
+                                    :action="storeTask().url"
+                                    :method="storeTask().method"
+                                    :options="{ preserveScroll: true }"
+                                    @success="
+                                        () => {
+                                            createTaskModalOpen = false;
+                                            router.reload({ preserveScroll: true });
+                                        }
+                                    "
+                                    v-slot="{ errors, processing }"
+                                    class="space-y-4"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="project_id"
+                                        :value="project.id"
                                     />
-                                    <InputError :message="errors.title" />
-                                </div>
-                                <div class="grid gap-2">
-                                    <Label for="description">Description</Label>
-                                    <textarea
-                                        id="description"
-                                        name="description"
-                                        required
-                                        rows="4"
-                                        class="w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40"
-                                        placeholder="Task description"
-                                    ></textarea>
-                                    <InputError :message="errors.description" />
-                                </div>
-                                <div class="grid gap-2">
-                                    <Label for="user_id">Assign To</Label>
-                                    <select
-                                        id="user_id"
-                                        name="user_id"
-                                        class="h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40"
-                                    >
-                                        <option value="">Unassigned</option>
-                                        <option
-                                            v-for="user in users"
-                                            :key="user.id"
-                                            :value="user.id"
+                                    <input
+                                        type="hidden"
+                                        name="status"
+                                        value="to_do"
+                                    />
+                                    <div class="grid gap-2">
+                                        <Label for="title">Title</Label>
+                                        <Input
+                                            id="title"
+                                            name="title"
+                                            required
+                                            placeholder="Task title"
+                                        />
+                                        <InputError :message="errors.title" />
+                                    </div>
+                                    <div class="grid gap-2">
+                                        <Label for="description">Description</Label>
+                                        <textarea
+                                            id="description"
+                                            name="description"
+                                            required
+                                            rows="4"
+                                            class="w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40"
+                                            placeholder="Task description"
+                                        ></textarea>
+                                        <InputError :message="errors.description" />
+                                    </div>
+                                    <div class="grid gap-2">
+                                        <Label for="user_id">Assign To</Label>
+                                        <select
+                                            id="user_id"
+                                            name="user_id"
+                                            class="h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none selection:bg-primary selection:text-primary-foreground file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40"
                                         >
-                                            {{ user.name }}
-                                        </option>
-                                    </select>
-                                    <InputError :message="errors.user_id" />
-                                </div>
-                                <DialogFooter>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        @click="createTaskModalOpen = false"
-                                    >
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        :disabled="processing"
-                                    >
-                                        Create Task
-                                    </Button>
-                                </DialogFooter>
-                            </Form>
-                        </DialogContent>
-                    </Dialog>
+                                            <option value="">Unassigned</option>
+                                            <option
+                                                v-for="user in users"
+                                                :key="user.id"
+                                                :value="user.id"
+                                            >
+                                                {{ user.name }}
+                                            </option>
+                                        </select>
+                                        <InputError :message="errors.user_id" />
+                                    </div>
+                                    <DialogFooter>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            @click="createTaskModalOpen = false"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            :disabled="processing"
+                                        >
+                                            Create Task
+                                        </Button>
+                                    </DialogFooter>
+                                </Form>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
                 
                 <SearchFilter
@@ -721,7 +721,6 @@ const removeUserFromProject = (userId: number) => {
                     :tasks="tasks"
                     @filtered="(filtered) => filteredTasks = filtered"
                 />
-                </div>
 
                 <div
                     v-if="tasks.length === 0"
@@ -1101,125 +1100,126 @@ const removeUserFromProject = (userId: number) => {
                                                 </p>
                                             </div>
                                         </div>
-                                    <div class="flex items-center gap-1">
-                                        <Dialog
-                                            :open="
-                                                editCommentModalOpen ===
-                                                comment.id
-                                            "
-                                            @update:open="
-                                                (value) =>
-                                                    (editCommentModalOpen =
-                                                        value
-                                                            ? comment.id
-                                                            : null)
-                                            "
-                                        >
-                                            <DialogTrigger as-child>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    class="h-6 w-6 p-0"
-                                                >
-                                                    <Pencil class="h-3 w-3" />
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent>
-                                                <DialogHeader>
-                                                    <DialogTitle>
-                                                        Edit Comment
-                                                    </DialogTitle>
-                                                    <DialogDescription>
-                                                        Update your comment
-                                                    </DialogDescription>
-                                                </DialogHeader>
-                                                <Form
-                                                    :action="
-                                                        updateComment(
-                                                            comment.id,
-                                                        ).url
-                                                    "
-                                                    :method="
-                                                        updateComment(
-                                                            comment.id,
-                                                        ).method
-                                                    "
-                                                    :options="{
-                                                        preserveScroll: true,
-                                                    }"
-                                                    @success="
-                                                        () => {
-                                                            editCommentModalOpen =
-                                                                null;
-                                                            router.reload({
-                                                                preserveScroll: true,
-                                                            });
-                                                        }
-                                                    "
-                                                    v-slot="{
-                                                        errors,
-                                                        processing,
-                                                    }"
-                                                    class="space-y-4"
-                                                >
-                                                    <input
-                                                        type="hidden"
-                                                        name="_method"
-                                                        value="patch"
-                                                    />
-                                                    <div class="grid gap-2">
-                                                        <Label
-                                                            for="edit-comment-text"
-                                                            >Comment</Label
-                                                        >
-                                                        <Input
-                                                            id="edit-comment-text"
-                                                            name="text"
-                                                            required
-                                                            :default-value="
-                                                                comment.text
-                                                            "
-                                                            placeholder="Enter your comment"
-                                                        />
-                                                        <InputError
-                                                            :message="
-                                                                errors.text
-                                                            "
-                                                        />
-                                                    </div>
-                                                    <DialogFooter>
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            @click="
+                                        <div class="flex items-center gap-1">
+                                            <Dialog
+                                                :open="
+                                                    editCommentModalOpen ===
+                                                    comment.id
+                                                "
+                                                @update:open="
+                                                    (value) =>
+                                                        (editCommentModalOpen =
+                                                            value
+                                                                ? comment.id
+                                                                : null)
+                                                "
+                                            >
+                                                <DialogTrigger as-child>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        class="h-6 w-6 p-0"
+                                                    >
+                                                        <Pencil class="h-3 w-3" />
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle>
+                                                            Edit Comment
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Update your comment
+                                                        </DialogDescription>
+                                                    </DialogHeader>
+                                                    <Form
+                                                        :action="
+                                                            updateComment(
+                                                                comment.id,
+                                                            ).url
+                                                        "
+                                                        :method="
+                                                            updateComment(
+                                                                comment.id,
+                                                            ).method
+                                                        "
+                                                        :options="{
+                                                            preserveScroll: true,
+                                                        }"
+                                                        @success="
+                                                            () => {
                                                                 editCommentModalOpen =
-                                                                    null
-                                                            "
-                                                        >
-                                                            Cancel
-                                                        </Button>
-                                                        <Button
-                                                            type="submit"
-                                                            :disabled="
-                                                                processing
-                                                            "
-                                                        >
-                                                            Update Comment
-                                                        </Button>
-                                                    </DialogFooter>
-                                                </Form>
-                                            </DialogContent>
-                                        </Dialog>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            @click="deleteComment(comment.id)"
-                                            class="h-7 w-7 rounded-lg border border-destructive/30 bg-card/80 backdrop-blur-xl p-0 shadow-sm transition-all duration-300 hover:scale-110 hover:shadow-md"
-                                        >
-                                            <Trash2
-                                                class="h-3.5 w-3.5 text-destructive"
-                                            />
-                                        </Button>
+                                                                    null;
+                                                                router.reload({
+                                                                    preserveScroll: true,
+                                                                });
+                                                            }
+                                                        "
+                                                        v-slot="{
+                                                            errors,
+                                                            processing,
+                                                        }"
+                                                        class="space-y-4"
+                                                    >
+                                                        <input
+                                                            type="hidden"
+                                                            name="_method"
+                                                            value="patch"
+                                                        />
+                                                        <div class="grid gap-2">
+                                                            <Label
+                                                                for="edit-comment-text"
+                                                                >Comment</Label
+                                                            >
+                                                            <Input
+                                                                id="edit-comment-text"
+                                                                name="text"
+                                                                required
+                                                                :default-value="
+                                                                    comment.text
+                                                                "
+                                                                placeholder="Enter your comment"
+                                                            />
+                                                            <InputError
+                                                                :message="
+                                                                    errors.text
+                                                                "
+                                                            />
+                                                        </div>
+                                                        <DialogFooter>
+                                                            <Button
+                                                                type="button"
+                                                                variant="outline"
+                                                                @click="
+                                                                    editCommentModalOpen =
+                                                                        null
+                                                                "
+                                                            >
+                                                                Cancel
+                                                            </Button>
+                                                            <Button
+                                                                type="submit"
+                                                                :disabled="
+                                                                    processing
+                                                                "
+                                                            >
+                                                                Update Comment
+                                                            </Button>
+                                                        </DialogFooter>
+                                                    </Form>
+                                                </DialogContent>
+                                            </Dialog>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                @click="deleteComment(comment.id)"
+                                                class="h-7 w-7 rounded-lg border border-destructive/30 bg-card/80 backdrop-blur-xl p-0 shadow-sm transition-all duration-300 hover:scale-110 hover:shadow-md"
+                                            >
+                                                <Trash2
+                                                    class="h-3.5 w-3.5 text-destructive"
+                                                />
+                                            </Button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
