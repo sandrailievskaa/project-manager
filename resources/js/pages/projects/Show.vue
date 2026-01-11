@@ -74,7 +74,7 @@ const editTaskModalOpen = ref<number | null>(null);
 const commentModalOpen = ref<number | null>(null);
 const editCommentModalOpen = ref<number | null>(null);
 const addUserModalOpen = ref(false);
-const viewMode = ref<'grid' | 'kanban' | 'calendar'>('kanban');
+const viewMode = ref<'kanban' | 'calendar'>('kanban');
 const filteredTasks = ref<Task[]>([]);
 const searchInputRef = ref<HTMLInputElement | null>(null);
 
@@ -211,14 +211,6 @@ onMounted(() => {
         ctrl: true,
         action: () => {
             viewMode.value = 'kanban';
-        },
-    });
-    
-    register({
-        key: '2',
-        ctrl: true,
-        action: () => {
-            viewMode.value = 'grid';
         },
     });
     
@@ -600,14 +592,6 @@ const removeUserFromProject = (userId: number) => {
                                 <Columns3 class="h-4 w-4" />
                             </Button>
                             <Button
-                                @click="viewMode = 'grid'"
-                                variant="ghost"
-                                size="sm"
-                                :class="viewMode === 'grid' ? 'bg-primary/10 text-primary' : ''"
-                            >
-                                <LayoutGrid class="h-4 w-4" />
-                            </Button>
-                            <Button
                                 @click="viewMode = 'calendar'"
                                 variant="ghost"
                                 size="sm"
@@ -744,30 +728,6 @@ const removeUserFromProject = (userId: number) => {
                     :tasks="tasks"
                     :project-deadline="project.deadline"
                 />
-
-                <div v-else-if="viewMode === 'grid'" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <div
-                        v-for="task in displayTasks"
-                        :key="task.id"
-                        class="group relative flex flex-col gap-4 overflow-hidden rounded-3xl border-2 border-border/50 bg-gradient-to-br from-card via-card/95 to-muted/30 backdrop-blur-xl p-6 shadow-xl ring-1 ring-border/30 transition-all duration-500 hover:-translate-y-1 hover:scale-[1.02]"
-                        :class="[
-                            statusColors[task.status as keyof typeof statusColors]?.hover || '',
-                            getPriorityClass(task),
-                        ]"
-                    >
-                        <div
-                            class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r"
-                            :style="{
-                                background: `linear-gradient(to right, ${statusColors[task.status as keyof typeof statusColors]?.light || '#A0AEC0'}, ${statusColors[task.status as keyof typeof statusColors]?.dark || '#718096'})`,
-                            }"
-                        ></div>
-                        
-                        <div class="absolute inset-0 bg-gradient-to-br from-card to-muted opacity-30 transition-opacity duration-500 group-hover:opacity-50"></div>
-                        <div class="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"></div>
-                        
-                        <div class="relative z-10 flex flex-1 flex-col gap-4">
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="flex flex-1 items-center gap-3">
                                     <div
                                         class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg ring-2 ring-border/30 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6"
                                         :class="statusColors[task.status as keyof typeof statusColors]?.bg || 'bg-gray-100 dark:bg-gray-800'"
@@ -1335,3 +1295,4 @@ const removeUserFromProject = (userId: number) => {
         <Toast />
     </AppLayout>
 </template>
+
