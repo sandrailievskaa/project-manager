@@ -61,14 +61,6 @@
     --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
     *,
     ::after,
@@ -90,7 +82,6 @@
 }
 
 :root {
-    /* Light Mode Color Palette - Professional & Powerful */
     --background: #F8FAFC;
     --foreground: #1A202C;
     --card: #FFFFFF;
@@ -114,7 +105,6 @@
     --border: #E2E8F0;
     --input: #E2E8F0;
     --ring: #C83FFF;
-    /* Chart colors - Light Mode */
     --chart-1: #C83FFF;
     --chart-2: #2D72F8;
     --chart-3: #FF8933;
@@ -133,7 +123,6 @@
 }
 
 .dark {
-    /* Dark Mode Color Palette - Elegant & Modern */
     --background: #0F1A2F;
     --foreground: #E2E8F0;
     --card: #1A2746;
@@ -157,7 +146,6 @@
     --border: #2D3748;
     --input: #2D3748;
     --ring: #9B67FC;
-    /* Chart colors - Dark Mode */
     --chart-1: #9B67FC;
     --chart-2: #1851FF;
     --chart-3: #7FAAFF;
@@ -174,13 +162,11 @@
     --sidebar: #0F1A2F;
 }
 
-/* Pastel Mode Color Palette */
 .pastel {
     transition: all 0.3s ease-in-out;
 }
 
 .pastel:not(.dark) {
-    /* Pastel Mode Color Palette - Soft & Aesthetic */
     --background: #F5F8FA;
     --foreground: #2D3748;
     --card: #FFFFFF;
@@ -200,7 +186,6 @@
     --border: #E5E9ED;
     --input: #E5E9ED;
     --ring: #DFAECA;
-    /* Chart colors - Pastel Mode */
     --chart-1: #DFAECA;
     --chart-2: #7FAAFF;
     --chart-3: #F2C2CB;

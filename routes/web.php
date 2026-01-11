@@ -14,7 +14,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $user = auth()->user();
 
-        // Get tasks per project (only assigned projects)
         $projectsWithTaskCounts = $user->projects()
             ->withCount(['tasks' => function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -31,7 +30,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->take(10)
             ->values();
 
-        // Get recent activity (last 10 task updates)
         $recentTasks = $user->tasks()
             ->with(['project:id,title'])
             ->orderBy('updated_at', 'desc')

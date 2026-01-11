@@ -117,7 +117,6 @@ const getStatusLabel = (status: string) => {
     }
 };
 
-// Pastel color palette (light mode)
 const pastelColors = {
     primary: '#6C8AE4',
     secondary: '#8BC7B8',
@@ -127,7 +126,6 @@ const pastelColors = {
     danger: '#F2B5B5',
 };
 
-// Dark mode colors
 const darkColors = {
     primary: '#4F6BED',
     secondary: '#5FB3A2',
@@ -140,22 +138,22 @@ const taskStatusChartData = computed(() => {
         {
             label: 'To Do',
             value: to_do,
-            color: 'rgb(148, 163, 184)', // slate-400 - neutral
+            color: 'rgb(148, 163, 184)',
         },
         {
             label: 'In Progress',
             value: in_progress,
-            color: 'rgb(99, 102, 241)', // primary - vibrant indigo
+            color: 'rgb(99, 102, 241)',
         },
         {
             label: 'QA',
             value: qa,
-            color: 'rgb(139, 92, 246)', // secondary - vibrant purple
+            color: 'rgb(139, 92, 246)',
         },
         {
             label: 'Done',
             value: done,
-            color: 'rgb(236, 72, 153)', // accent - vibrant pink
+            color: 'rgb(236, 72, 153)',
         },
     ].filter((item) => item.value > 0);
 });
@@ -164,13 +162,12 @@ const tasksPerProjectData = computed(() => {
     if (!props.stats.tasks_per_project || props.stats.tasks_per_project.length === 0) {
         return [];
     }
-    // Vibrant color scheme matching screenshots
     const colors = [
-        'bg-primary dark:bg-primary', // Vibrant Indigo
-        'bg-secondary dark:bg-secondary', // Vibrant Purple
-        'bg-accent dark:bg-accent', // Vibrant Pink
-        'bg-amber-500 dark:bg-amber-400', // Vibrant Orange
-        'bg-cyan-500 dark:bg-cyan-400', // Vibrant Cyan
+        'bg-primary dark:bg-primary',
+        'bg-secondary dark:bg-secondary',
+        'bg-accent dark:bg-accent',
+        'bg-amber-500 dark:bg-amber-400',
+        'bg-cyan-500 dark:bg-cyan-400',
         'bg-primary dark:bg-primary',
         'bg-secondary dark:bg-secondary',
         'bg-accent dark:bg-accent',
@@ -319,7 +316,6 @@ const teamAvatars = computed(() => {
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4 md:p-6 lg:p-8">
-            <!-- Welcome Header Section -->
             <div
                 class="group relative overflow-hidden rounded-3xl border-0 p-6 shadow-2xl transition-all duration-500 md:p-8 bg-gradient-to-r from-primary via-secondary to-accent"
             >
@@ -687,7 +683,6 @@ const teamAvatars = computed(() => {
                 </div>
             </div>
 
-            <!-- Charts and Activity Section -->
             <div class="grid gap-6 lg:grid-cols-2">
 
                 <div
