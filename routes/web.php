@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureUserApproved;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -10,7 +11,7 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', EnsureUserApproved::class])->group(function () {
     Route::get('dashboard', function () {
         $user = auth()->user();
 

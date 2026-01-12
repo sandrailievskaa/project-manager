@@ -39,6 +39,7 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'approved_at' => 'datetime',
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'experience' => UserExperience::class,
@@ -69,5 +70,10 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->role === UserRole::ADMIN;
+    }
+
+    public function isApproved(): bool
+    {
+        return (bool) $this->approved_at;
     }
 }

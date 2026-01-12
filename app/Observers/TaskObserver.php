@@ -3,21 +3,34 @@
 namespace App\Observers;
 
 use App\Models\Task;
+use Illuminate\Support\Facades\Auth;
 
 class TaskObserver
 {
-    public function created(Task $task): void {}
+    public function updated(Task $task): void
+    {
+        if (! $task->wasChanged('status')) {
+            return;
+        }
 
-    public function updated(Task $task): void {}
+        $oldStatus = $task->getOriginal('status');
+        $newStatus = $task->status;
+
+        $user = Auth::user();
+
+        $task->comments()->create([
+            'user_id' => $user?->id,
+            'text' => sprintf(
+                'Status changed from "%s" to "%s"%s.',
+                $oldStatus->getLabel(),
+                $newStatus->getLabel(),
+                $user ? ' by '.$user->name : ''
+            ),
+        ]);
+    }
 
     public function deleting(Task $task): void
     {
         $task->comments()->delete();
     }
-
-    public function deleted(Task $task): void {}
-
-    public function restored(Task $task): void {}
-
-    public function forceDeleted(Task $task): void {}
 }

@@ -38,4 +38,3 @@ class PerformanceMetricsWidget extends BaseWidget
         ];
     }
 }
-

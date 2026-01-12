@@ -34,12 +34,6 @@ class UserResource extends Resource
                     ->required()
                     ->prefixIcon('heroicon-o-envelope')
                     ->prefixIconColor('info'),
-                Forms\Components\TextInput::make('password')
-                    ->hiddenOn('edit')
-                    ->password()
-                    ->required()
-                    ->prefixIcon('heroicon-o-lock-closed')
-                    ->prefixIconColor('warning'),
                 Forms\Components\Select::make('experience')
                     ->options(UserExperience::class)
                     ->required()
@@ -66,15 +60,11 @@ class UserResource extends Resource
                     ->icon('heroicon-o-envelope')
                     ->iconColor('info'),
                 Tables\Columns\TextColumn::make('experience')
-                    ->badge()
-                    ->searchable()
-                    ->icon(fn ($record) => $record->experience?->getIcon())
-                    ->color(fn ($record) => $record->experience?->getColor()),
+                    ->badge(),
                 Tables\Columns\TextColumn::make('role')
-                    ->badge()
-                    ->searchable()
-                    ->icon(fn ($record) => $record->role?->getIcon())
-                    ->color(fn ($record) => $record->role?->getColor()),
+                    ->badge(),
+                Tables\Columns\TextColumn::make('approved_at')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -94,6 +84,10 @@ class UserResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('approve')
+                    ->action(fn (User $record) => $record->update(['approved_at' => now()]))
+                    ->visible(fn (User $record) => ! $record->isApproved())
+                    ->requiresConfirmation(),
             ]);
     }
 
